@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>
+    <%= htmlWebpackPlugin.options.title %>
+  </title>
+  <script>
+    var coverSupport =
+      "CSS" in window &&
+      typeof CSS.supports === "function" &&
+      (CSS.supports("top: env(a)") || CSS.supports("top: constant(a)"));
+    document.write(
+      '<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0' +
+      (coverSupport ? ", viewport-fit=cover" : "") +
+      '" />'
+    );
+  </script>
+  <link rel="stylesheet" href="<%= BASE_URL %>static/index.<%= VUE_APP_INDEX_CSS_HASH %>.css" />
+  <!-- 新蓝网js -->
+  <script src="https://ohudong.cztv.com/1/261542/js/callapp-lib-v3.5.3.js"></script>
+
+  <script src="https://ohudong.cztv.com/1/261538/js/ztvApi.js"></script>
+
+  <!-- <script src="https://ohudong.cztv.com/1/254009/js/jquery.min.js"></script> -->
+  <!-- <script src="https://res.wx.qq.com/open/js/jweixin-1.6.0.js"></script> -->
+  <!-- <script>
+    $(document).ready(function () {
+      // 通过config接口注入权限验证配置并申请所需开放标签
+      function initWxConfig() {
+        var ua = window.navigator.userAgent.toLowerCase();
+        if (/micromessenger/.test(ua)) {
+          $.ajax({
+            url:
+              "https://zlive.cztv.com/api/v2/iblue/weixin/share?channel_id=1&callback=?&url=" +
+              location.href.split("#")[0],
+            type: "GET",
+            success: function (res) {
+              if (res.code === 200) {
+                const msg = res.data;
+                wx.config({
+                  debug: false,
+                  appId: msg.appId,
+                  timestamp: msg.timestamp,
+                  nonceStr: msg.nonceStr,
+                  signature: msg.signature,
+                  jsApiList: [
+                    "updateTimelineShareData",
+                    "updateAppMessageShareData",
+                  ],
+                  openTagList: ["wx-open-launch-app"],
+                });
+              }
+            },
+          });
+        }
+      }
+      initWxConfig();
+    });
+  </script> -->
+  <!-- 埋点开始 -->
+  <script async
+    src="https://lf3-data.volccdn.com/obj/data-static/log-sdk/collect/5.0/collect-rangers-v5.1.4.js"></script>
+  <script>
+    (function (win, export_obj) {
+      win["LogAnalyticsObject"] = export_obj;
+      if (!win[export_obj]) {
+        function _collect() {
+          _collect.q.push(arguments);
+        }
+        _collect.q = _collect.q || [];
+        win[export_obj] = _collect;
+      }
+      win[export_obj].l = +new Date();
+    })(window, "collectEvent");
+    window.collectEvent("init", {
+      app_id: 481246, // 参考2.1节获取，注意类型是number而非字符串
+      channel: "cn", // 设置数据上送地址
+      log: true, // true:开启日志，false:关闭日志
+      autotrack: false, // 全埋点开关，true开启，false关闭
+    });
+    // 此处可添加设置uuid、设置公共属性等代码
+    window.collectEvent("start"); // 通知SDK设置完毕，可以真正开始发送事件了
+  </script>
+  <!-- 埋点结束 -->
+</head>
+
+<body>
+  <noscript>
+    <strong>Please enable JavaScript to continue.</strong>
+  </noscript>
+  <div id="app"></div>
+  <!-- built files will be auto injected -->
+</body>
+
+</html>
