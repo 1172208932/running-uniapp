@@ -4,7 +4,7 @@ import App from './App'
 import store from './store'
 
 import VConsole from 'vconsole'
-// const vConsole = new VConsole()
+const vConsole = new VConsole()
 
 Vue.config.productionTip = false
 
