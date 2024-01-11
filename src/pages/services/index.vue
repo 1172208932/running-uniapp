@@ -1,9 +1,9 @@
 <template>
-  <view class="container" v-if="!isZtv&&!parentMember">
+  <view id="indexBox"   class="container-box" v-if="!isZtv&&!parentMember">
     <view class="tip-cover" v-if="isWB">
      <text>点击右上角...>在默认浏览器中打开 ↗</text>
     </view>
-    <view class="header flex-row flex-j-c-b flex-a-i-c">
+    <!-- <view class="header flex-row flex-j-c-b flex-a-i-c">
       <image
         src="../../static/images/zlogo_index.png"
         class="zlogo-s p-l-25"
@@ -30,13 +30,32 @@
           </text>
         </view>
       </view>
-    </view>
-		<view class="flex-column flex-mc m-t-x1">
+    </view> -->
+		<!-- <view class="flex-column flex-mc m-t-x1">
 			<image src="../../static/images/title_loading.png" class="title"></image>
 			<view class="line m-t-30 m-b-20"></view>
 			<image src="../../static/images/title_index.png" class="subTitle"></image>
-		</view>
-		<view class="flex-column flex-mc">
+		</view> -->
+    <view class="page1" v-if="showPage1">
+      <view class="progress">{{ progress }} %</view>
+    </view>
+    <div ref="scrollbox" class="page2">
+      <div v-if="!showOverBox" class="drop-box">
+        <div
+          ref="draggabTarget"
+          class="drop-zone"
+          @touchmove.prevent="handleTouchMove"
+          @touchend.prevent="handleTouchEnd"
+        >
+        </div>
+        <div class="drop-item" ref="draggableItem" @touchstart="handleTouchStart"></div>
+      </div>
+      <div v-else class="drop-box2"></div>
+
+    </div>
+    <view class="page3"></view>
+
+		<!-- <view class="flex-column flex-mc">
 			<view class="logo">
 			  <image src="../../static/images/zlogo_index.png" class="zlogo"></image>
 			</view>
@@ -61,7 +80,7 @@
 
         </text>
 			</view>
-		</view>
+		</view> -->
   </view>
   <view class="container" v-else-if="parentMember">
     <view class="tip-cover" v-if="isWB">
@@ -151,9 +170,16 @@ import {
 import { getParentMember } from "@/common/http/api/member.js";
 import { getQueryParam } from "@/common//utils/ztv/index.js"
 import jWeixin from "weixin-js-sdk";
+
 export default {
   data() {
     return {
+      isDragging: false,
+      startX: 0,
+      startY: 0,
+      progress:0,
+      showPage1:true,
+      showOverBox:false,
       isZtv: navigator.userAgent.match(/chinabluetv/i),
       isWx:navigator.userAgent.match(/micromessenger/i),
       isWB:navigator.userAgent.match(/WeiBo/i),
@@ -165,6 +191,10 @@ export default {
     };
   },
   onLoad(e) {
+    document.body.style.overflow = 'hidden';
+    // setTimeout(() => {
+    //   this.$refs.scrollbox.scrollIntoView({ behavior: 'smooth' });
+    // }, 3000);
     this.initWx();
     initDefaultShare();
     this.query = getApp().globalData.query;
@@ -173,9 +203,73 @@ export default {
         this.parentMember = res.data;
       });
     }
+    this.beginProgress()
   },
   onShow() {},
   methods: {
+    beginProgress(){
+      this.progress += 10
+      setTimeout(()=>{
+        if(this.progress == 20){
+          this.$refs.scrollbox.scrollIntoView({ behavior: 'smooth' });
+          setTimeout(()=>{
+            this.showPage1 = false
+          },1000)
+        }else{
+          this.beginProgress() 
+        }
+      },1000)
+    },
+    handleTouchStart(event) {
+      // 记录初始触摸位置
+      this.startX = event.touches[0].clientX;
+      this.startY = event.touches[0].clientY;
+
+      // 标记拖拽开始
+      this.isDragging = true;
+
+      // 添加移动和结束事件监听器
+      window.addEventListener("touchmove", this.handleTouchMove);
+      window.addEventListener("touchend", this.handleTouchEnd);
+    },
+    handleTouchMove(event) {
+      if (!this.isDragging) return;
+
+      // 计算移动的距离
+      const deltaX = event.touches[0].clientX - this.startX;
+      const deltaY = event.touches[0].clientY - this.startY;
+
+      // 移动拖拽的元素
+      this.$refs.draggableItem.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+    },
+    handleTouchEnd() {
+      if (!this.isDragging) return;
+
+      // 标记拖拽结束
+      this.isDragging = false;
+
+      // 移除移动和结束事件监听器
+      window.removeEventListener("touchmove", this.handleTouchMove);
+      window.removeEventListener("touchend", this.handleTouchEnd);
+
+      // 获取拖拽的元素的位置
+      const rect = this.$refs.draggableItem.getBoundingClientRect();
+      const rectTarget = this.$refs.draggabTarget.getBoundingClientRect();
+
+      const isDroppedToTarget = rect.right >= rectTarget.right - 10 && rect.right <= rectTarget.right + 10 && 
+      rect.bottom >= rectTarget.bottom - 10 && rect.bottom <= rectTarget.bottom + 10
+
+      if (isDroppedToTarget) {
+        console.log("拖拽到目标区域");
+        document.body.style.overflow = '';
+        this.showOverBox = true
+        // 执行相应的逻辑
+      }else{
+        this.$refs.draggableItem.style.transform = "translate(0, 0)";
+      }
+
+      // 重置拖拽元素的位置
+    },
     jump() {
      // 微信环境调用 utils/weixin.js 注入后使用<wx-open-launch-app></wx-open-launch-app>打开
       if (!this.isWx) {
@@ -294,6 +388,75 @@ export default {
   // padding: 0 30rpx;
   &.unlogin {
     background: #fff;
+  }
+}
+.container-box{
+  width: 100vw;
+  position: relative;
+  .page1{
+    background: url(@/static/loading/loading.png) no-repeat;
+    background-size: 750rpx 1624rpx;
+    width: 750rpx;
+    height: 1624rpx;
+    position: relative;
+
+    .progress{
+      position: absolute;
+      top: 40%;
+      width: 100vw;
+      text-align: center;
+      color: #ffffff;
+      font-size: 24rpx;
+    }
+  }
+  .page2{
+    background: url(@/static/loading/page1.png) no-repeat;
+    background-size: 750rpx 1624rpx;
+    width: 750rpx;
+    height: 1624rpx;
+    position: relative;
+    .drop-box2{
+      background: url(@/static/loading/drop-box2.png) no-repeat;
+      background-size: 519rpx 524rpx;
+      width: 519rpx;
+      height: 524rpx;
+      position: absolute;
+      left: 50%;
+      top: 20%;
+      transform: translateX(-50%);
+    }
+    .drop-box{
+      background: url(@/static/loading/drop-box.png) no-repeat;
+      background-size: 519rpx 524rpx;
+      width: 519rpx;
+      height: 524rpx;
+      position: absolute;
+      left: 50%;
+      top: 20%;
+      transform: translateX(-50%);
+      .drop-item{
+        background: url(@/static/loading/drop-item.png) no-repeat;
+        background-size: 240rpx 272rpx;
+        width: 240rpx;
+        height: 272rpx;
+        position: absolute;
+        right: -60rpx;
+        bottom: -60rpx;
+      }
+      .drop-zone{
+        width: 240rpx;
+        height: 272rpx;
+        position: absolute;
+        right: 30rpx;
+        bottom: 40rpx;
+      }
+    }
+  }
+  .page3{
+    background: url(@/static/loading/page2.png) no-repeat;
+    background-size: 750rpx 1836rpx;
+    width: 750rpx;
+    height: 1836rpx;
   }
 }
 .tip-cover{

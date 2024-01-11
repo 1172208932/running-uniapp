@@ -9,8 +9,7 @@
       <image src="../../static/images/logo_route.png" class="icon"></image>
     </view>
     <view class="flex-column flex-mc m-t-x1">
-      <div class="drag-box">
-        <div
+        <!-- <div
           class="drop-zone"
           @touchmove.prevent="handleTouchMove"
           @touchend.prevent="handleTouchEnd"
@@ -23,8 +22,7 @@
           @touchstart="handleTouchStart"
         >
           可拖拽的内容
-        </div>
-      </div>
+        </div> -->
 
       <image
         src="../../static/images/title_loading.png"
@@ -78,7 +76,6 @@ export default {
           // 先执行动画，再请求接口
           if (!this.isCompleted) {
             getRouteLast().then((response) => {
-              console.log('23333')
               // 请求成功，执行后续动画，并做跳转逻辑
               // this.animateProgress(100).then(() => {
               //   this.finish(response.data);
@@ -102,6 +99,7 @@ export default {
       // 添加移动和结束事件监听器
       window.addEventListener("touchmove", this.handleTouchMove);
       window.addEventListener("touchend", this.handleTouchEnd);
+      document.body.style.overflow = 'hidden';
     },
     handleTouchMove(event) {
       if (!this.isDragging) return;
@@ -141,6 +139,7 @@ export default {
 
       // 重置拖拽元素的位置
       this.$refs.draggableItem.style.transform = "translate(0, 0)";
+      document.body.style.overflow = '';
     },
     animateProgress(target) {
       return new Promise((resolve, reject) => {
