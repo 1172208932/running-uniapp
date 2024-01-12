@@ -77,10 +77,10 @@ export default {
           if (!this.isCompleted) {
             getRouteLast().then((response) => {
               // 请求成功，执行后续动画，并做跳转逻辑
-              // this.animateProgress(100).then(() => {
-              //   this.finish(response.data);
-              // });
-              // notifyActivity(response.data);
+              this.animateProgress(100).then(() => {
+                this.finish(response.data);
+              });
+              notifyActivity(response.data);
             });
           }
         })
