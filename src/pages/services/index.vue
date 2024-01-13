@@ -406,7 +406,7 @@ export default {
     beginProgress() {
       this.progress += 10
       setTimeout(() => {
-        if (this.progress == 20) {
+        if (this.progress == 100) {
           // this.$refs.scrollbox.scrollIntoView({ behavior: 'smooth' });
             this.showPage1 = false
         } else {
