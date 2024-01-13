@@ -39,8 +39,12 @@
     <view class="page1" v-if="showPage1">
       <view class="logo"></view>
       <view class="progress">{{ progress }} %</view>
+      <view class="loading-t1">"西塞山前白鹭飞，桃花流水鳜鱼肥"</view>
+      <view class="loading-t2">正在加载中...</view>
+      <view class="loading-t3">（手机调至非静音状态体验更佳）</view>
     </view>
     <div ref="scrollbox" class="page2">
+      <div class="logo"></div>
       <div v-if="!showOverBox" class="drop-box">
         <div ref="draggabTarget" class="drop-zone" @touchmove.prevent="handleTouchMove"
           @touchend.prevent="handleTouchEnd">
@@ -48,9 +52,12 @@
         <div class="drop-item" ref="draggableItem" @touchstart="handleTouchStart"></div>
       </div>
       <div v-else class="drop-box2"></div>
-
+      <div v-if="!showOverBox" class="logo-tip">完成拼图开始鸟瞰浙里生态</div>
+      <div v-else class="logo-tip2"></div>
     </div>
-    <view class="page3"></view>
+    <view class="page3">
+      <view class="page3-t1"></view>
+    </view>
     <view class="page4">
       <view v-if="showPage4Forent" class="front4">
         <div class="slider-box">
@@ -67,6 +74,9 @@
     <view v-if="showNextPage1" class="page5"></view>
     <view v-if="showNextPage1" class="page6"></view>
     <view v-if="showNextPage1" class="page7">
+      <view class="page7-t1"></view>
+      <view class="page7-btn"></view>
+
       <div v-if="showPage7Forent" class="slider-box2">
         <van-slider inactive-color="rgba(0,0,0,0)" active-color="rgba(0,0,0,0)" v-model="value2" @change="onChange2">
           <template #button>
@@ -78,7 +88,7 @@
     <view v-if="showNextPage1 && showNextPage2" class="page8"></view>
     <view v-if="showNextPage1 && showNextPage2" class="page9">
       <div class="playIcon" @click="playFullscreenVideo"></div>
-      <div v-show="showVideo" class="video-container">
+      <div v-if="showVideo" class="video-container" @click="hideVideo">
         <video
           ref="videoPlayer"
           width="100%"
@@ -87,10 +97,8 @@
           preload="auto"
           @ended="onVideoEnded"
           @fullscreenchange="onFullscreenChange"
+          src="https://ohudong.cztv.com/1/266202/mp4/mda-pdfc759vw33967hi.mp4"
         >
-          <source src="https://vd3.bdstatic.com/mda-pdfc759vw33967hi/360p/h264/1681634236492349667/mda-pdfc759vw33967hi.mp4" type="video/mp4">
-          <!-- 其他视频格式的 source 标签 -->
-          Your browser does not support the video tag.
         </video>
       </div>
     </view>
@@ -109,9 +117,24 @@
 
     </view>
 
-    <view v-if="showNextPage1 && showNextPage2 && showNextPage3" class="page11"></view>
+    <view v-if="showNextPage1 && showNextPage2 && showNextPage3" class="page11">
+      <div class="playIcon" @click="playFullscreenVideo2"></div>
+      <div v-if="showVideo2" class="video-container" @click="hideVideo2">
+        <video
+          ref="videoPlayer2"
+          width="100%"
+          height="auto"
+          controls
+          preload="auto"
+          @ended="onVideoEnded2"
+          @fullscreenchange="onFullscreenChange2"
+          src="https://ali-v.cztv.com/cztv/vod/2023/12/28/4d1d06a519d051477e18d501ad3ae391/4d1d06a519d051477e18d501ad3ae391_h264_800k_mp4.mp4"
+        >
+        </video>
+      </div>
+    </view>
     <view v-if="showNextPage1 && showNextPage2 && showNextPage3" class="page12">
-      <view class="begin"></view>
+      <view class="begin" @click="begin"></view>
     </view>
 
 
@@ -242,6 +265,7 @@ export default {
       showNextPage2: false,
       showNextPage3: false,
       showVideo:false,
+      showVideo2:false,
       isDragging: false,
       startX: 0,
       startY: 0,
@@ -280,23 +304,71 @@ export default {
     playFullscreenVideo() {
       // 显示视频容器
       this.showVideo = true;
+      setTimeout(()=>{
+        // 获取 video 元素
+        const videoPlayer = this.$refs.videoPlayer;
+        // 请求进入全屏模式
+        if (videoPlayer?.requestFullscreen) {
+          videoPlayer.requestFullscreen();
+        } else if (videoPlayer?.mozRequestFullScreen) { /* Firefox */
+          videoPlayer.mozRequestFullScreen();
+        } else if (videoPlayer?.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+          videoPlayer.webkitRequestFullscreen();
+        } else if (videoPlayer?.msRequestFullscreen) { /* IE/Edge */
+          videoPlayer.msRequestFullscreen();
+        }
+        // 播放视频
+        videoPlayer.play();
+      },500)
+    },
+
+    playFullscreenVideo2() {
+      // 显示视频容器
+      this.showVideo2 = true;
+      setTimeout(()=>{
+        // 获取 video 元素
+        const videoPlayer = this.$refs.videoPlayer2;
+        // 请求进入全屏模式
+        if (videoPlayer?.requestFullscreen) {
+          videoPlayer.requestFullscreen();
+        } else if (videoPlayer?.mozRequestFullScreen) { /* Firefox */
+          videoPlayer.mozRequestFullScreen();
+        } else if (videoPlayer?.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+          videoPlayer.webkitRequestFullscreen();
+        } else if (videoPlayer?.msRequestFullscreen) { /* IE/Edge */
+          videoPlayer.msRequestFullscreen();
+        }
+        // 播放视频
+        videoPlayer.play();
+      },500)
+    },
+    hideVideo() {
+      this.showVideo = false;
 
       // 获取 video 元素
       const videoPlayer = this.$refs.videoPlayer;
 
-      // 请求进入全屏模式
-      if (videoPlayer?.requestFullscreen) {
-        videoPlayer.requestFullscreen();
-      } else if (videoPlayer?.mozRequestFullScreen) { /* Firefox */
-        videoPlayer.mozRequestFullScreen();
-      } else if (videoPlayer?.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
-        videoPlayer.webkitRequestFullscreen();
-      } else if (videoPlayer?.msRequestFullscreen) { /* IE/Edge */
-        videoPlayer.msRequestFullscreen();
+      // 暂停视频
+      videoPlayer.pause();
+    },
+    hideVideo2() {
+      this.showVideo2 = false;
+      // 获取 video 元素
+      const videoPlayer = this.$refs.videoPlayer2;
+      // 暂停视频
+      videoPlayer.pause();
+    },
+    onVideoEnded2() {
+      // 视频播放结束时的处理
+      // 可以在这里执行一些操作，比如隐藏视频容器等
+      this.showVideo2 = false;
+    },
+    onFullscreenChange2() {
+      // 全屏状态变化时的处理
+      if (!document.fullscreenElement) {
+        // 如果退出了全屏，隐藏视频容器
+        this.showVideo2 = false;
       }
-
-      // 播放视频
-      videoPlayer.play();
     },
     onVideoEnded() {
       // 视频播放结束时的处理
@@ -335,14 +407,12 @@ export default {
       this.progress += 10
       setTimeout(() => {
         if (this.progress == 20) {
-          this.$refs.scrollbox.scrollIntoView({ behavior: 'smooth' });
-          setTimeout(() => {
+          // this.$refs.scrollbox.scrollIntoView({ behavior: 'smooth' });
             this.showPage1 = false
-          }, 1000)
         } else {
           this.beginProgress()
         }
-      }, 1000)
+      }, 500)
     },
     handleTouchStart(event) {
       // 记录初始触摸位置
@@ -405,6 +475,12 @@ export default {
     },
     handleLaunchFn() {
 
+    },
+
+    begin(){
+      uni.navigateTo({
+              url: "/pages/main/loading",
+            });
     },
     login() {
       if (!this.isZtv) {
@@ -529,7 +605,31 @@ export default {
 
     .progress {
       position: absolute;
+      top: 35%;
+      width: 100vw;
+      text-align: center;
+      color: #ffffff;
+      font-size: 24rpx;
+    }
+    .loading-t1{
+      position: absolute;
       top: 40%;
+      width: 100vw;
+      text-align: center;
+      color: #ffffff;
+      font-size: 36rpx;
+    }
+    .loading-t2{
+      position: absolute;
+      top: 50%;
+      width: 100vw;
+      text-align: center;
+      color: #ffffff;
+      font-size: 24rpx;
+    }
+    .loading-t3{
+      position: fixed;
+      bottom: 10%;
       width: 100vw;
       text-align: center;
       color: #ffffff;
@@ -543,7 +643,35 @@ export default {
     width: 750rpx;
     height: 1624rpx;
     position: relative;
-
+    .logo{
+      background: url(@/static/loading/logo.png) no-repeat;
+      background-size: 569rpx 470rpx;
+      width: 569rpx;
+      height: 470rpx;
+      position: absolute;
+      top: 50rpx;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .logo-tip{
+      width: 100vw;
+      text-align: center;
+      color: #ffffff;
+      font-size: 24rpx;
+      position: absolute;
+      top: 1200rpx;
+    }
+    .logo-tip2{
+      background: url(@/static/loading/sliptip.png) no-repeat;
+      background-size: 100rpx 185rpx;
+      width: 100rpx;
+      height: 185rpx;
+      position: absolute;
+      // bottom: 0rpx;
+      top: 1200rpx;
+      left: 50%;
+      transform: translateX(-50%);
+    }
     .drop-box2 {
       background: url(@/static/loading/drop-box2.png) no-repeat;
       background-size: 519rpx 524rpx;
@@ -551,7 +679,7 @@ export default {
       height: 524rpx;
       position: absolute;
       left: 50%;
-      top: 20%;
+      top: 35%;
       transform: translateX(-50%);
     }
 
@@ -562,7 +690,7 @@ export default {
       height: 524rpx;
       position: absolute;
       left: 50%;
-      top: 20%;
+      top: 35%;
       transform: translateX(-50%);
 
       .drop-item {
@@ -590,6 +718,16 @@ export default {
     background-size: 750rpx 1836rpx;
     width: 750rpx;
     height: 1836rpx;
+    position: relative;
+    .page3-t1{
+      background: url(@/static/loading/page3-t1.png) no-repeat;
+      background-size: 687rpx 436rpx;
+      width: 687rpx;
+      height: 436rpx;
+      position: absolute;
+      bottom: 30rpx;
+      left: 30rpx;
+    }
   }
 
   .page4 {
@@ -644,6 +782,26 @@ export default {
     width: 750rpx;
     height: 2403rpx;
     position: relative;
+    .page7-t1{
+      background: url(@/static/loading/page7-t1.png) no-repeat;
+      background-size: 750rpx 563rpx;
+      width: 750rpx;
+      height: 563rpx;
+      position: absolute;
+      top: 10rpx;
+      left: 0rpx;
+    }
+
+    .page7-btn{
+      background: url(@/static/loading/page7-btn.png) no-repeat;
+      background-size: 410rpx 83rpx;
+      width: 410rpx;
+      height: 83rpx;
+      position: absolute;
+      bottom: 700rpx;
+      left: 50%;
+      transform: translateX(-50%);
+    }
 
     .slider-box2 {
       background: url(@/static/loading/line.png) no-repeat;
@@ -726,6 +884,16 @@ export default {
     background-size: 750rpx 1624rpx;
     width: 750rpx;
     height: 1624rpx;
+    position: relative;
+    .playIcon{
+      background: url(@/static/loading/videoplay.png) no-repeat;
+      background-size: 165rpx 152rpx;
+      width: 165rpx;
+      height: 152rpx;
+      position: absolute;
+      top: 420rpx;
+      left: 200rpx;
+    }
   }
 
   .page12 {
