@@ -69,6 +69,7 @@
           </van-slider>
         </div>
       </view>
+      <view class="page4-tip"></view>
     </view>
 
     <view v-if="showNextPage1" class="page5"></view>
@@ -736,6 +737,16 @@ export default {
     width: 750rpx;
     height: 2066rpx;
     position: relative;
+
+    .page4-tip{
+      background: url(@/static/loading/page3-title.png) no-repeat;
+      background-size: 748rpx 572rpx;
+      width: 748rpx;
+      height: 572rpx;
+      position: absolute;
+      bottom: 0rpx;
+      left: 0;
+    }
 
     // page3-front
     .front4 {
